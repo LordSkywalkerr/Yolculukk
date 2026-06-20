@@ -160,8 +160,7 @@ img, .pixel-art {
 
 /* Sahnelerin yönünü tersine çevirerek gerçek bir tırmanış hissi yaratma */
 .story-container {
-    display: flex;
-    flex-direction: column-reverse; /* İlk sahneyi en alta, son sahneyi en üste taşır */
+    width: 100%;
 }
 
 /* Tarayıcının çirkin sağ kaydırma çubuğunu gizleme */
