@@ -3,42 +3,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const milkyWayScene = document.querySelector("#scene-milkyway");
     const milkyWayArt = document.querySelector(".milkyway-art");
 
-    // Ekran yüksekliğini alalım
     const screenHeight = window.innerHeight;
 
-    // [KRİTİK ÇÖZÜM] Site ilk açıldığında direkt en alttaki Gün Batımı sahnesine odaklan!
+    // Site açıldığında direkt en alttaki Gün Batımı sahnesine odaklan
     setTimeout(() => {
         const benchScene = document.querySelector("#scene-bench");
         if (benchScene) {
             benchScene.scrollIntoView({ behavior: "auto", block: "end" });
         }
-    }, 100); // Tarayıcının sayfayı yükleyip boyutu algılaması için küçük bir gecikme
+    }, 100);
 
-    // Arka plan geçişlerinin ipeksi bir yumuşaklıkla değişmesi için CSS ekliyoruz
     if (skyBackground) {
-        skyBackground.style.transition = "background 1.5s ease-in-out, background-color 1.5s ease-in-out";
+        skyBackground.style.transition = "background 1.2s ease-in-out, background-color 1.2s ease-in-out";
     }
-    document.body.style.transition = "background-color 1.5s ease-in-out";
+    document.body.style.transition = "background-color 1.2s ease-in-out";
 
     /* ========================================================
-       1. DOĞAL HAREKET: PARMAĞI AŞAĞI ÇEKTİKÇE YUKARIDAKİLER İNER
+       1. AKICI VE YAĞ GİBİ AKAN TERS KAYDIRMA MEKANİZMASI
        ======================================================== */
 
-    // Bilgisayarda: Tekerleği YUKARI ittikçe sayfayı İLERİ (aşağı) götürür
+    // Bilgisayarda: Tekerlek hareketi
     window.addEventListener("wheel", (event) => {
         event.preventDefault();
-
         if (event.deltaY < 0) {
-            // Tekerlek yukarı -> Hikayede İLERİ git (Aşağı kaydır)
-            window.scrollBy({ top: 140, behavior: "smooth" });
+            window.scrollBy({ top: 180, behavior: "smooth" }); // Adım mesafesini biraz artırdık
         } else if (event.deltaY > 0) {
-            // Tekerlek aşağı -> Hikayede GERİ git (Yukarı kaydır)
-            window.scrollBy({ top: -140, behavior: "smooth" });
+            window.scrollBy({ top: -180, behavior: "smooth" });
         }
     }, { passive: false });
 
-    // Telefonda: Parmağını YUKARIDAN AŞAĞIYA çektikçe sayfayı İLERİ (aşağı) götürür
+    // Telefonda: [YENİ] Ağırlaşmayı çözen, ivmeli ve akıcı dokunmatik sistemi
     let touchStartY = 0;
+
     window.addEventListener("touchstart", (event) => {
         touchStartY = event.touches[0].clientY;
     }, { passive: true });
@@ -47,46 +43,41 @@ document.addEventListener("DOMContentLoaded", () => {
         let touchEndY = event.touches[0].clientY;
         let touchDifference = touchStartY - touchEndY;
 
+        // Ekranda parmağı aşağı doğru çekerken (touchDifference < 0) yukarıdaki sahneler aşağı iner
         if (touchDifference < 0) {
-            // Parmağı aşağı çekti -> Hikayede İLERİ git (Aşağı kaydır)
-            window.scrollBy(0, Math.abs(touchDifference) * 1.4);
+            // "smooth" behavior ekleyerek telefonun donma hissini kaldırdık ve kaydırmayı yumuşattık
+            window.scrollBy({ top: Math.abs(touchDifference) * 2.5, behavior: "smooth" });
         } else if (touchDifference > 0) {
-            // Parmağı yukarı itti -> Hikayede GERİ git (Yukarı kaydır)
-            window.scrollBy(0, -Math.abs(touchDifference) * 1.4);
+            window.scrollBy({ top: -Math.abs(touchDifference) * 2.5, behavior: "smooth" });
         }
+        
         touchStartY = touchEndY;
-    }, { passive: true });
+    }, { passive: false }); // Hassas yön kontrolü için passive: false yaptık
 
 
     /* ========================================================
-       2. REZİVE EDİLMİŞ DİNAMİK RENKLER VE SAMANYOLU EFEKTİ
+       2. DİNAMİK RENKLER VE SAMANYOLU EFEKTİ
        ======================================================== */
     window.addEventListener("scroll", () => {
         const scrollTop = window.scrollY;
         const totalHeight = document.documentElement.scrollHeight - screenHeight;
         const scrollPercent = (scrollTop / totalHeight) * 100;
 
-        // Yön ters döndüğü için yüzdelikleri tırmanış sırasına göre eşitledik
         if (scrollPercent > 85) {
-            // En Alttaki Başlangıç: Romantik Gün Batımı (Bank Sahnesi)
             skyBackground.style.background = "linear-gradient(to top, #ff7e5f, #feb47b, #2c3e50)";
             document.body.style.backgroundColor = "#0b0914";
         } 
         else if (scrollPercent <= 85 && scrollPercent > 65) {
-            // Bulutlar Sahnesi: Geceye geçiş mavisi
             skyBackground.style.background = "linear-gradient(to top, #1f1c2c, #0b0914)";
         } 
         else if (scrollPercent <= 65 && scrollPercent > 30) {
-            // Uzay Boyu (Ay, Venüs, Mars, Güneş, Sirius): Derin Uzay Siyahı
             skyBackground.style.background = "linear-gradient(to top, #000000, #0b0914)";
         } 
         else if (scrollPercent <= 30 && scrollPercent > 12) {
-            // Samanyolu ve Onun Fotoğrafı: Alacakaranlık mor/pembe geçişi
             skyBackground.style.background = "linear-gradient(to top, #2c3e50, #fd746c)";
             document.body.style.backgroundColor = "#0b0914";
         }
         else {
-            // En Üstteki Final (Cennetin İzdüşümü): Başlangıçtaki gibi sıcacık, romantik turuncu tonu!
             skyBackground.style.background = "linear-gradient(to top, #2c3e50, #ff7e5f, #feb47b)";
             document.body.style.backgroundColor = "#feb47b";
         }
