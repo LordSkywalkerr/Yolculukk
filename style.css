@@ -1,0 +1,173 @@
+/* Temel Sıfırlamalar ve Mobil Optimizasyonu */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace; /* Retro/Pixel havası için */
+    background-color: #0b0914;
+    overflow-x: hidden;
+    color: #ffffff;
+}
+
+/* Pixel Art Görsellerinin Bulanıklaşmasını Engelleyen Sihirli Kod */
+img, .pixel-art {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Dinamik Renk Değiştirecek Gökyüzü */
+.sky-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    /* İlk başta gün batımı moru/turuncusu ile başlayacak, JS ile değiştireceğiz */
+    background: linear-gradient(to top, #ff7e5f, #feb47b, #2c3e50);
+    z-index: -2;
+    transition: background 0.8s ease;
+}
+
+/* Her Bir Sahne (Durak) Telefon Ekranını Tam Kaplayacak */
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100dvh; /* Dynamic Viewport Height mobilde harika çalışır */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Hikaye Yazılarının Kutusu */
+.story-text {
+    background: rgba(0, 0, 0, 0.6); /* Yazıların okunması için hafif şeffaf siyah arka plan */
+    padding: 15px 25px;
+    border-radius: 8px;
+    border: 2px solid #ffffff; /* Pixel kutu hissi */
+    max-width: 85%;
+    margin-top: 20px;
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+    animation: floating 3s ease-in-out infinite;
+}
+
+.story-text p {
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+/* Havada Hafifçe Süzülme Animasyonu (Yazılar ve Gezegenler İçin) */
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Yukarı Kaydır Oku Animasyonu */
+.scroll-arrow {
+    display: block;
+    margin-top: 15px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
+/* Durak 9: Onun Fotoğrafı İçin Pixel Çerçeve */
+.star-photo-container {
+    width: 200px;
+    height: 200px;
+    border: 6px double #ffffff;
+    padding: 4px;
+    background-color: #000;
+}
+
+.her-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Final Sahnesi - Aden Kapsayıcısı */
+#scene-aden {
+    background: #ffffff; /* Burası beyaz kalacak */
+    color: #000000;
+    transition: background 1.5s ease; /* Renk geçişini daha da yumuşattık */
+}
+
+/* Aden Bahçesi Görseli ve Sihirli Geçiş Maskesi */
+.aden-art {
+    background-image: url('assets/pixel-bahce.png'); 
+    width: 100vw; 
+    height: 50dvh; 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center; /* Görseli alta yaslıyoruz */
+    margin-bottom: 20px;
+    
+    /* İŞTE SİHİRLİ DOKUNUŞ: Üst kısmı arka plana pürüzsüzce eritme maskesi */
+    mask-image: linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+}
+
+#scene-aden .final-letter {
+    color: #000000;
+    max-width: 85%;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Pixel Art Görsellerinin Genel Ayarları */
+.pixel-art {
+    width: 280px; /* Telefon ekranına uygun genişlik */
+    height: 280px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-bottom: 20px;
+}
+
+/* Her Sahnede Görselleri Bağlama */
+.bench-art     { background-image: url('assets/bank-ve-biz.png'); width: 100vw; height: 40dvh; }
+.clouds-art    { background-image: url('assets/pixel-bulut.png'); }
+.moon-art      { background-image: url('assets/pixel-ay.png'); }
+.venus-art     { background-image: url('assets/pixel-venus.png'); }
+.mars-art      { background-image: url('assets/pixel-mars.png'); }
+.sun-art       { background-image: url('assets/pixel-gunes.png'); }
+.sirius-art    { background-image: url('assets/pixel-sirius.png'); }
+
+/* Zoom-out yapılacak Samanyolu Sahnesi */
+.milkyway-art { 
+    background-image: url('assets/pixel-samanyolu.png'); 
+    width: 100vw; 
+    height: 60dvh; 
+    transform: scale(2.5); /* İlk başta çok yakın başlayacak, JS ile uzaklaşacak */
+}
+
+/* Final Sahnesi */
+.aden-art      { background-image: url('assets/pixel-bahce.png'); width: 100vw; height: 40dvh; }
+
+/* Sahnelerin yönünü tersine çevirerek gerçek bir tırmanış hissi yaratma */
+.story-container {
+    display: flex;
+    flex-direction: column-reverse; /* İlk sahneyi en alta, son sahneyi en üste taşır */
+}
+
+/* Tarayıcının çirkin sağ kaydırma çubuğunu gizleme */
+::-webkit-scrollbar {
+    display: none; 
+}
+html {
+    scrollbar-width: none; 
+}
