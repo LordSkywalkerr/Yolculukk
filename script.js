@@ -2,35 +2,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const skyBackground = document.querySelector(".sky-background");
     const milkyWayScene = document.querySelector("#scene-milkyway");
     const milkyWayArt = document.querySelector(".milkyway-art");
-    const adenScene = document.querySelector("#scene-aden");
 
     // Ekran yüksekliğini alalım
     const screenHeight = window.innerHeight;
 
-    // Arka plan renginin küt diye değil, süzülerek (pürüzsüz) değişmesi için CSS ekliyoruz
+    // Arka plan geçişlerinin süzülerek, ipeksi bir yumuşaklıkla değişmesi için CSS ekliyoruz
     if (skyBackground) {
-        skyBackground.style.transition = "background 1.5s ease, background-color 1.5s ease";
+        skyBackground.style.transition = "background 1.5s ease-in-out, background-color 1.5s ease-in-out";
     }
-    document.body.style.transition = "background-color 1.5s ease";
+    document.body.style.transition = "background-color 1.5s ease-in-out";
 
     /* ========================================================
-       TAM İSTEDİĞİN YÖN: PARMAĞI YUKARI İTTİKÇE İLERLEME
+       1. KAYDIRMA YÖNÜNÜ TAM İSTEDİĞİN GİBİ TERSİNE ÇEVİRME
        ======================================================== */
 
-    // 1. Bilgisayarda: Tekerleği AŞAĞI çevirdikçe (klasik) hikayede İLERİ gider
+    // Bilgisayarda: Tekerleği YUKARI ittikçe sayfayı İLERİ (aşağı) götürür (Görseller yukarıdan aşağı süzülür)
     window.addEventListener("wheel", (event) => {
-        event.preventDefault(); // Varsayılanı engelle
+        event.preventDefault(); // Tarayıcının varsayılan hareketini engelle
 
-        if (event.deltaY > 0) {
-            // Tekerlek aşağı -> Hikayede İLERİ git
-            window.scrollBy({ top: 150, behavior: "smooth" });
-        } else if (event.deltaY < 0) {
-            // Tekerlek yukarı -> Hikayede GERİ git
-            window.scrollBy({ top: -150, behavior: "smooth" });
+        if (event.deltaY < 0) {
+            // Tekerlek yukarı -> Hikayede İLERİ git (Aşağı kaydır)
+            window.scrollBy({ top: 140, behavior: "smooth" });
+        } else if (event.deltaY > 0) {
+            // Tekerlek aşağı -> Hikayede GERİ git (Yukarı kaydır)
+            window.scrollBy({ top: -140, behavior: "smooth" });
         }
     }, { passive: false });
 
-    // 2. Telefonda: Parmağı AŞAĞI KAVRAYIP YUKARI İTTİKÇE (klasik) hikayede İLERİ gider
+    // Telefonda: Parmağını YUKARIDAN AŞAĞIYA çektikçe sayfayı İLERİ (aşağı) götürür
     let touchStartY = 0;
     window.addEventListener("touchstart", (event) => {
         touchStartY = event.touches[0].clientY;
@@ -40,55 +39,61 @@ document.addEventListener("DOMContentLoaded", () => {
         let touchEndY = event.touches[0].clientY;
         let touchDifference = touchStartY - touchEndY;
 
-        // touchDifference > 0 demek parmağını yukarı doğru itiyorsun demektir (Instagram mantığı)
-        if (touchDifference > 0) {
-            // Parmağı yukarı itti -> Hikayede İLERİ git
-            window.scrollBy(0, Math.abs(touchDifference) * 1.2);
-        } else if (touchDifference < 0) {
-            // Parmağı aşağı çekti -> Hikayede GERİ git
-            window.scrollBy(0, -Math.abs(touchDifference) * 1.2);
+        // Parmağı YUKARIDAN AŞAĞIYA çekince (touchDifference < 0) hikayede İLERİ gider
+        if (touchDifference < 0) {
+            window.scrollBy(0, Math.abs(touchDifference) * 1.4); // Akıcı tırmanış hassasiyeti
+        } else if (touchDifference > 0) {
+            window.scrollBy(0, -Math.abs(touchDifference) * 1.4);
         }
         touchStartY = touchEndY;
     }, { passive: true });
 
 
     /* ========================================================
-       EFEKTLER VE YUMUŞATILMIŞ PARLAMA SİSTEMİ
+       2. SÜZÜLEN RENKLER VE SAMANYOLU EFEKTİ
        ======================================================== */
     window.addEventListener("scroll", () => {
         const scrollTop = window.scrollY;
         const totalHeight = document.documentElement.scrollHeight - screenHeight;
         const scrollPercent = (scrollTop / totalHeight) * 100;
 
-        /* 1. DİNAMİK GÖKYÜZÜ RENK GEÇİŞLERİ */
+        /* DİNAMİK GÖKYÜZÜ RENK GEÇİŞLERİ */
         if (scrollPercent < 15) {
+            // Başlangıç: Romantik Gün Batımı
             skyBackground.style.background = "linear-gradient(to top, #ff7e5f, #feb47b, #2c3e50)";
+            document.body.style.backgroundColor = "#0b0914";
         } 
         else if (scrollPercent >= 15 && scrollPercent < 35) {
+            // Geceye geçiş mavisi
             skyBackground.style.background = "linear-gradient(to top, #1f1c2c, #0b0914)";
         } 
         else if (scrollPercent >= 35 && scrollPercent < 70) {
+            // Derin Uzay Siyahı
             skyBackground.style.background = "linear-gradient(to top, #000000, #0b0914)";
         } 
         else if (scrollPercent >= 70 && scrollPercent < 88) {
+            // Alacakaranlık pembeliği/mora geçiş
             skyBackground.style.background = "linear-gradient(to top, #2c3e50, #fd746c)";
-            document.body.style.backgroundColor = "#0b0914"; // Uzay siyahı tabanı
+            document.body.style.backgroundColor = "#0b0914";
         }
         else {
-            // Son düzlükte beyaza pürüzsüz geçiş tetikleniyor
-            skyBackground.style.background = "#ffffff";
-            document.body.style.backgroundColor = "#ffffff";
+            // KÜT BEYAZLIK TAMAMEN İPTAL! 
+            // Son kısım da (Cennetin İzdüşümü) tıpkı ilki gibi romantik, sıcak bir turuncu/mor gün batımı tonuna süzülüyor.
+            skyBackground.style.background = "linear-gradient(to top, #2c3e50, #ff7e5f, #feb47b)";
+            document.body.style.backgroundColor = "#feb47b"; 
         }
 
-        /* 2. SAMANYOLU UZAKLAŞMA (ZOOM-OUT) EFEKTİ */
-        const milkyWayRect = milkyWayScene.getBoundingClientRect();
-        if (milkyWayRect.top < screenHeight && milkyWayRect.bottom > 0) {
-            const visibleProgress = (screenHeight - milkyWayRect.top) / screenHeight;
-            const scaleValue = Math.max(1, 2.5 - (visibleProgress * 1.5));
-            
-            if (milkyWayArt) {
-                milkyWayArt.style.transform = `scale(${scaleValue})`;
-                milkyWayArt.style.transition = "transform 0.1s ease-out";
+        /* SAMANYOLU UZAKLAŞMA (ZOOM-OUT) EFEKTİ */
+        if (milkyWayScene) {
+            const milkyWayRect = milkyWayScene.getBoundingClientRect();
+            if (milkyWayRect.top < screenHeight && milkyWayRect.bottom > 0) {
+                const visibleProgress = (screenHeight - milkyWayRect.top) / screenHeight;
+                const scaleValue = Math.max(1, 2.5 - (visibleProgress * 1.5));
+                
+                if (milkyWayArt) {
+                    milkyWayArt.style.transform = `scale(${scaleValue})`;
+                    milkyWayArt.style.transition = "transform 0.1s ease-out";
+                }
             }
         }
     });
