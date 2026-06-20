@@ -6,19 +6,27 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ekran yüksekliğini alalım
     const screenHeight = window.innerHeight;
 
-    // Arka plan geçişlerinin süzülerek, ipeksi bir yumuşaklıkla değişmesi için CSS ekliyoruz
+    // [KRİTİK ÇÖZÜM] Site ilk açıldığında direkt en alttaki Gün Batımı sahnesine odaklan!
+    setTimeout(() => {
+        const benchScene = document.querySelector("#scene-bench");
+        if (benchScene) {
+            benchScene.scrollIntoView({ behavior: "auto", block: "end" });
+        }
+    }, 100); // Tarayıcının sayfayı yükleyip boyutu algılaması için küçük bir gecikme
+
+    // Arka plan geçişlerinin ipeksi bir yumuşaklıkla değişmesi için CSS ekliyoruz
     if (skyBackground) {
         skyBackground.style.transition = "background 1.5s ease-in-out, background-color 1.5s ease-in-out";
     }
     document.body.style.transition = "background-color 1.5s ease-in-out";
 
     /* ========================================================
-       1. KAYDIRMA YÖNÜNÜ TAM İSTEDİĞİN GİBİ TERSİNE ÇEVİRME
+       1. DOĞAL HAREKET: PARMAĞI AŞAĞI ÇEKTİKÇE YUKARIDAKİLER İNER
        ======================================================== */
 
-    // Bilgisayarda: Tekerleği YUKARI ittikçe sayfayı İLERİ (aşağı) götürür (Görseller yukarıdan aşağı süzülür)
+    // Bilgisayarda: Tekerleği YUKARI ittikçe sayfayı İLERİ (aşağı) götürür
     window.addEventListener("wheel", (event) => {
-        event.preventDefault(); // Tarayıcının varsayılan hareketini engelle
+        event.preventDefault();
 
         if (event.deltaY < 0) {
             // Tekerlek yukarı -> Hikayede İLERİ git (Aşağı kaydır)
@@ -39,10 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
         let touchEndY = event.touches[0].clientY;
         let touchDifference = touchStartY - touchEndY;
 
-        // Parmağı YUKARIDAN AŞAĞIYA çekince (touchDifference < 0) hikayede İLERİ gider
         if (touchDifference < 0) {
-            window.scrollBy(0, Math.abs(touchDifference) * 1.4); // Akıcı tırmanış hassasiyeti
+            // Parmağı aşağı çekti -> Hikayede İLERİ git (Aşağı kaydır)
+            window.scrollBy(0, Math.abs(touchDifference) * 1.4);
         } else if (touchDifference > 0) {
+            // Parmağı yukarı itti -> Hikayede GERİ git (Yukarı kaydır)
             window.scrollBy(0, -Math.abs(touchDifference) * 1.4);
         }
         touchStartY = touchEndY;
@@ -50,37 +59,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* ========================================================
-       2. SÜZÜLEN RENKLER VE SAMANYOLU EFEKTİ
+       2. REZİVE EDİLMİŞ DİNAMİK RENKLER VE SAMANYOLU EFEKTİ
        ======================================================== */
     window.addEventListener("scroll", () => {
         const scrollTop = window.scrollY;
         const totalHeight = document.documentElement.scrollHeight - screenHeight;
         const scrollPercent = (scrollTop / totalHeight) * 100;
 
-        /* DİNAMİK GÖKYÜZÜ RENK GEÇİŞLERİ */
-        if (scrollPercent < 15) {
-            // Başlangıç: Romantik Gün Batımı
+        // Yön ters döndüğü için yüzdelikleri tırmanış sırasına göre eşitledik
+        if (scrollPercent > 85) {
+            // En Alttaki Başlangıç: Romantik Gün Batımı (Bank Sahnesi)
             skyBackground.style.background = "linear-gradient(to top, #ff7e5f, #feb47b, #2c3e50)";
             document.body.style.backgroundColor = "#0b0914";
         } 
-        else if (scrollPercent >= 15 && scrollPercent < 35) {
-            // Geceye geçiş mavisi
+        else if (scrollPercent <= 85 && scrollPercent > 65) {
+            // Bulutlar Sahnesi: Geceye geçiş mavisi
             skyBackground.style.background = "linear-gradient(to top, #1f1c2c, #0b0914)";
         } 
-        else if (scrollPercent >= 35 && scrollPercent < 70) {
-            // Derin Uzay Siyahı
+        else if (scrollPercent <= 65 && scrollPercent > 30) {
+            // Uzay Boyu (Ay, Venüs, Mars, Güneş, Sirius): Derin Uzay Siyahı
             skyBackground.style.background = "linear-gradient(to top, #000000, #0b0914)";
         } 
-        else if (scrollPercent >= 70 && scrollPercent < 88) {
-            // Alacakaranlık pembeliği/mora geçiş
+        else if (scrollPercent <= 30 && scrollPercent > 12) {
+            // Samanyolu ve Onun Fotoğrafı: Alacakaranlık mor/pembe geçişi
             skyBackground.style.background = "linear-gradient(to top, #2c3e50, #fd746c)";
             document.body.style.backgroundColor = "#0b0914";
         }
         else {
-            // KÜT BEYAZLIK TAMAMEN İPTAL! 
-            // Son kısım da (Cennetin İzdüşümü) tıpkı ilki gibi romantik, sıcak bir turuncu/mor gün batımı tonuna süzülüyor.
+            // En Üstteki Final (Cennetin İzdüşümü): Başlangıçtaki gibi sıcacık, romantik turuncu tonu!
             skyBackground.style.background = "linear-gradient(to top, #2c3e50, #ff7e5f, #feb47b)";
-            document.body.style.backgroundColor = "#feb47b"; 
+            document.body.style.backgroundColor = "#feb47b";
         }
 
         /* SAMANYOLU UZAKLAŞMA (ZOOM-OUT) EFEKTİ */
